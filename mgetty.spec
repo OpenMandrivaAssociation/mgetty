@@ -1,13 +1,14 @@
 %define name 	mgetty
-%define version 1.1.30
-%define release %mkrel 10
+%define version 1.1.35
+%define Date Feb22
+%define release %mkrel 1
 
 Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-Source0:	ftp://alpha.greenie.net:/pub/mgetty/source/1.1/%{name}%{version}-Dec16.tar.gz
-Source1:	ftp://alpha.greenie.net:/pub/mgetty/source/1.1/%{name}%{version}-Dec16.tar.gz.asc
+Source0:	ftp://alpha.greenie.net:/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
+Source1:	ftp://alpha.greenie.net:/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://alpha.greenie.net/mgetty/
 Patch0:		mgetty-1.1.14-config.patch
 Patch1:		mgetty-1.1.5-makekvg.patch
@@ -15,13 +16,11 @@ Patch2:		mgetty-1.1.14-policy.patch
 Patch3:		mgetty-1.1.5-strip.patch
 Patch4:		mgetty-1.1.14-echo.patch
 Patch5:		mgetty-1.1.14-logrotate.patch
-Patch6:		mgetty-1.1.24-imakefile.patch
-Patch8:		mgetty-1.1.30-noroot.patch
+Patch8:		mgetty-1.1.35-noroot.patch
 Patch9:		mgetty-1.1.21-linkman.patch
 
-Patch11:	mgetty-1.1.28-includes.patch
 Patch12:	mgetty-1.1.30-64bit-fixes.patch
-Patch13:	force_detect.patch
+Patch13:	mgetty-1.1.35-force_detect.patch
 Patch14:	mgetty-1.1.30-mktemp.patch
 Requires:	libgr-progs netpbm
 License:	GPL
@@ -107,14 +106,12 @@ cp policy.h-dist policy.h
 %patch3 -p1 -b .strip
 %patch4 -p1 -b .echo
 %patch5 -p1
-%patch6 -p1
 # new texinfo much stricter about xrefs
-%patch8 -p1
+%patch8 -p1 -b .noroot
 %patch9 -p1
 
-%patch11 -p1 -b .includes
 %patch12 -p1 -b .64bit-fixes
-%patch13 -p1
+%patch13 -p1 -b .force_detect
 %patch14 -p1 -b .mktemp
 
 %build
@@ -125,7 +122,7 @@ echo -e "\nSTART-INFO-DIR-ENTRY\n* mgetty: (mgetty).       A getty replacement u
 cd voice
 %make
 
-cd ../frontends/X11/viewfax-2.5
+cd ../frontends/X11/viewfax
 xmkmf
 make depend
 %make CDEBUGFLAGS="$RPM_OPT_FLAGS"
@@ -158,7 +155,7 @@ install -m 600 -c voice.conf-dist $RPM_BUILD_ROOT/etc/mgetty+sendfax/voice.conf
 cd -
 find samples -type f -exec chmod 644 {} \;
 
-cd frontends/X11/viewfax-2.5
+cd frontends/X11/viewfax
 %{makeinstall_std} BINDIR=%{_bindir} HELPDIR=%{_prefix}/lib/mgetty+sendfax MANDIR=/usr/man/man1 install.man
 cd -
 
@@ -231,6 +228,7 @@ fi
 %{_bindir}/g3cat
 %{_bindir}/g32pbm
 %{_bindir}/pbm2g3
+%{_bindir}/sff2g3
 %{_bindir}/faxspool
 %attr(755,root,root) %{_bindir}/faxrunq
 %{_bindir}/faxq
@@ -253,7 +251,9 @@ fi
 %{_mandir}/man1/faxq.1*
 %{_mandir}/man1/faxrm.1*
 %{_mandir}/man1/coverpg.1*
+%{_mandir}/man1/sff2g3.1*
 %{_mandir}/man5/faxqueue.5*
+%{_mandir}/man8/faxq-helper.8*
 %{_mandir}/man8/sendfax.8*
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/mgetty+sendfax/sendfax.config
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/mgetty+sendfax/faxrunq.config
@@ -325,12 +325,11 @@ fi
 
 %files viewfax
 %defattr(-,root,root)
-%doc frontends/X11/viewfax-2.5/C* frontends/X11/viewfax-2.5/README
+%doc frontends/X11/viewfax/C* frontends/X11/viewfax/README
 %{_bindir}/viewfax
 %dir %{_prefix}/lib/mgetty+sendfax
 %{_prefix}/lib/mgetty+sendfax/viewfax.tif
 %{_mandir}/man1/viewfax.1x.*
-%{_prefix}/X11R6/lib/X11/doc/html/viewfax.1.html
 
 %files contrib
 %defattr(644,root,root,755)
