@@ -7,9 +7,9 @@ Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-Source0:	ftp://alpha.greenie.net:/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
-Source1:	ftp://alpha.greenie.net:/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
-URL:		http://alpha.greenie.net/mgetty/
+Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
+Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
+URL:		http://mgetty.greenie.net/
 Patch0:		mgetty-1.1.14-config.patch
 Patch1:		mgetty-1.1.5-makekvg.patch
 Patch2:		mgetty-1.1.14-policy.patch
