@@ -1,7 +1,7 @@
 %define name 	mgetty
 %define version 1.1.35
 %define Date Feb22
-%define release %mkrel 1
+%define release %mkrel 2
 
 Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
@@ -22,6 +22,8 @@ Patch9:		mgetty-1.1.21-linkman.patch
 Patch12:	mgetty-1.1.30-64bit-fixes.patch
 Patch13:	mgetty-1.1.35-force_detect.patch
 Patch14:	mgetty-1.1.30-mktemp.patch
+# Replaces call to non-existent giftoppm with call to existent giftopnm - AdamW 2007/06
+Patch15:	mgetty-1.1.35-giftopnm.patch
 Requires:	libgr-progs netpbm
 License:	GPL
 Group:		Communications
@@ -113,6 +115,7 @@ cp policy.h-dist policy.h
 %patch12 -p1 -b .64bit-fixes
 %patch13 -p1 -b .force_detect
 %patch14 -p1 -b .mktemp
+%patch15 -p1 -b .giftopnm
 
 %build
 %make
