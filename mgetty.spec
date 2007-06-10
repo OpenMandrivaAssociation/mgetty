@@ -118,17 +118,17 @@ cp policy.h-dist policy.h
 %patch15 -p1 -b .giftopnm
 
 %build
-%make
+make
 # 1.1.28-2mdk yves - ugly hack to have correct info dir
 echo -e "\nSTART-INFO-DIR-ENTRY\n* mgetty: (mgetty).       A getty replacement use with data and fax modems.\nEND-INFO-DIR-ENTRY\n" >> doc/mgetty.info
 
 cd voice
-%make
+make
 
 cd ../frontends/X11/viewfax
 xmkmf
 make depend
-%make CDEBUGFLAGS="$RPM_OPT_FLAGS"
+make CDEBUGFLAGS="$RPM_OPT_FLAGS"
 
 %install
 rm -rf $RPM_BUILD_ROOT
