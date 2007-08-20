@@ -325,7 +325,7 @@ fi
 %{_bindir}/viewfax
 %dir %{_prefix}/lib/mgetty+sendfax
 %{_prefix}/lib/mgetty+sendfax/viewfax.tif
-%{_mandir}/man1/viewfax.1x.*
+%{_mandir}/man1/viewfax.1.*
 
 %files contrib
 %defattr(644,root,root,755)
