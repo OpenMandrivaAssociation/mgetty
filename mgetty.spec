@@ -31,7 +31,6 @@ BuildRequires:	rman
 BuildRequires:	tetex-dvips
 BuildRequires:	tetex-latex
 BuildRequires:	texinfo
-Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %package	sendfax
 Summary:	Provides support for sending faxes over a modem
