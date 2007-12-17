@@ -36,7 +36,7 @@ BuildRequires:	texinfo
 Summary:	Provides support for sending faxes over a modem
 Requires:	mgetty = %{version}-%{release}
 Conflicts:	hylafax
-PreReq:		rpm-helper
+Requires(post,preun):	rpm-helper
 Group:		Communications
 
 %package	voice
