@@ -1,7 +1,7 @@
 %define name 	mgetty
 %define version 1.1.36
 %define Date Jun15
-%define release %mkrel 1
+%define release %mkrel 2
 
 Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
