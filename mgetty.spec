@@ -92,7 +92,6 @@ If you're installing the mgetty-viewfax package, you'll also need to
 install mgetty.
 
 %description	contrib
-
 The contents of the contrib directory that comes with %{name}.
 
 %prep
