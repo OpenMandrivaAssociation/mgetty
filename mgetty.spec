@@ -1,12 +1,11 @@
 %define name 	mgetty
 %define version 1.1.36
 %define Date Jun15
-%define release %mkrel 3
 
 Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
 Version:	%{version}
-Release:	%{release}
+Release:	%mkrel 4
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
 Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://mgetty.greenie.net/
