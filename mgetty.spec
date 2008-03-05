@@ -122,56 +122,61 @@ make depend
 make CDEBUGFLAGS="$RPM_OPT_FLAGS"
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/var/spool -p $RPM_BUILD_ROOT/sbin
-make prefix=$RPM_BUILD_ROOT/usr spool=$RPM_BUILD_ROOT/var/spool \
-	CONFDIR=$RPM_BUILD_ROOT/etc/mgetty+sendfax install
-install -m700 callback/callback $RPM_BUILD_ROOT/usr/sbin
-install -m4711 callback/ct $RPM_BUILD_ROOT/usr/bin
-strip $RPM_BUILD_ROOT/usr/bin/newslock
+rm -rf %{buildroot}
 
-mv $RPM_BUILD_ROOT/usr/sbin/mgetty $RPM_BUILD_ROOT/sbin
+mkdir -p %{buildroot}/var/spool -p %{buildroot}/sbin
+make prefix=%{buildroot}/usr spool=%{buildroot}/var/spool \
+	CONFDIR=%{buildroot}/etc/mgetty+sendfax install
+
+install -m0755 callback/callback %{buildroot}/usr/sbin
+install -m0755 callback/ct %{buildroot}/usr/bin
+
+mv %{buildroot}/usr/sbin/mgetty %{buildroot}/sbin
 
 # this conflicts with efax
-mv $RPM_BUILD_ROOT/usr/man/man1/fax.1 $RPM_BUILD_ROOT/usr/man/man1/mgetty_fax.1
+mv %{buildroot}/usr/man/man1/fax.1 %{buildroot}/usr/man/man1/mgetty_fax.1
 
 # voice mail extensions
 cd voice
-mkdir -p $RPM_BUILD_ROOT/var/spool/voice 
-mkdir -p $RPM_BUILD_ROOT/var/spool/voice/messages
-mkdir -p $RPM_BUILD_ROOT/var/spool/voice/incoming
+mkdir -p %{buildroot}/var/spool/voice 
+mkdir -p %{buildroot}/var/spool/voice/messages
+mkdir -p %{buildroot}/var/spool/voice/incoming
 
-make prefix=$RPM_BUILD_ROOT/usr spool=$RPM_BUILD_ROOT/var/spool \
-	CONFDIR=$RPM_BUILD_ROOT/etc/mgetty+sendfax install
+make prefix=%{buildroot}/usr spool=%{buildroot}/var/spool \
+	CONFDIR=%{buildroot}/etc/mgetty+sendfax install
 
-mv $RPM_BUILD_ROOT/usr/sbin/vgetty $RPM_BUILD_ROOT/sbin
-install -m 600 -c voice.conf-dist $RPM_BUILD_ROOT/etc/mgetty+sendfax/voice.conf
+mv %{buildroot}/usr/sbin/vgetty %{buildroot}/sbin
+install -m 600 -c voice.conf-dist %{buildroot}/etc/mgetty+sendfax/voice.conf
 cd -
 find samples -type f -exec chmod 644 {} \;
 
 cd frontends/X11/viewfax
-%{makeinstall_std} BINDIR=%{_bindir} HELPDIR=%{_prefix}/lib/mgetty+sendfax MANDIR=/usr/man/man1 install.man
+%makeinstall_std BINDIR=%{_bindir} HELPDIR=%{_prefix}/lib/mgetty+sendfax MANDIR=/usr/man/man1 install.man
 cd -
 
-mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
-install -m 0644 logrotate.mgetty $RPM_BUILD_ROOT/etc/logrotate.d/mgetty
-install -m 0644 logrotate.sendfax $RPM_BUILD_ROOT/etc/logrotate.d/sendfax
+mkdir -p %{buildroot}/etc/logrotate.d
+install -m 0644 logrotate.mgetty %{buildroot}/etc/logrotate.d/mgetty
+install -m 0644 logrotate.sendfax %{buildroot}/etc/logrotate.d/sendfax
 
 #move the man pages
-mkdir -p $RPM_BUILD_ROOT/usr/share
-mv $RPM_BUILD_ROOT/usr/man $RPM_BUILD_ROOT/usr/share
+mkdir -p %{buildroot}/usr/share
+mv %{buildroot}/usr/man %{buildroot}/usr/share
 #move the info page
-#mkdir $RPM_BUILD_ROOT/usr/share
-mv $RPM_BUILD_ROOT/usr/info $RPM_BUILD_ROOT/usr/share
+#mkdir %{buildroot}/usr/share
+mv %{buildroot}/usr/info %{buildroot}/usr/share
 
 # yves - 1.1.26-4mdk - doc with good perm
 find doc -type f -exec chmod 644 {} \;
 chmod -f 0644 BUGS
 
-rm -f $RPM_BUILD_ROOT/usr/bin/g3topbm
+rm -f %{buildroot}/usr/bin/g3topbm
+
+# install these manually
+install -m0644 voice/man/man1/*.1 %{buildroot}%{_mandir}/man1/
+install -m0644 voice/man/man8/*.8 %{buildroot}%{_mandir}/man8/
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post
 %_install_info %{name}.info
@@ -228,7 +233,7 @@ fi
 %{_bindir}/faxq
 %{_bindir}/cutbl
 %{_bindir}/faxrm
-%attr(755,root,root) %{_bindir}/ct
+%attr(4711,root,root) %{_bindir}/ct
 %attr(755,root,root) %{_sbindir}/sendfax
 %attr(755,root,root) %{_sbindir}/faxrunqd
 %attr(755,root,root) %{_sbindir}/callback
@@ -288,32 +293,32 @@ fi
 %{_bindir}/pvftowav
 %{_bindir}/wavtopvf
 
-%{_mandir}/man1/zplay.1*
+%{_mandir}/man1/autopvf.1*
+%{_mandir}/man1/basictopvf.1*
+%{_mandir}/man1/lintopvf.1*
 %{_mandir}/man1/pvf.1*
 %{_mandir}/man1/pvfamp.1*
 %{_mandir}/man1/pvfcut.1*
 %{_mandir}/man1/pvfecho.1*
+%{_mandir}/man1/pvfff.1*
 %{_mandir}/man1/pvffile.1*
 %{_mandir}/man1/pvffilter.1*
-%{_mandir}/man1/pvffft.1*
 %{_mandir}/man1/pvfmix.1*
 %{_mandir}/man1/pvfnoise.1*
 %{_mandir}/man1/pvfreverse.1*
 %{_mandir}/man1/pvfsine.1*
 %{_mandir}/man1/pvfspeed.1*
-%{_mandir}/man1/pvftormd.1*
-%{_mandir}/man1/rmdtopvf.1*
-%{_mandir}/man1/rmdfile.1*
-%{_mandir}/man1/pvftovoc.1*
-%{_mandir}/man1/voctopvf.1*
-%{_mandir}/man1/pvftolin.1*
-%{_mandir}/man1/lintopvf.1*
-%{_mandir}/man1/pvftobasic.1*
-%{_mandir}/man1/basictopvf.1*
 %{_mandir}/man1/pvftoau.1*
-%{_mandir}/man1/autopvf.1*
+%{_mandir}/man1/pvftobasic.1*
+%{_mandir}/man1/pvftolin.1*
+%{_mandir}/man1/pvftormd.1*
+%{_mandir}/man1/pvftovoc.1*
 %{_mandir}/man1/pvftowav.1*
+%{_mandir}/man1/rmdfile.1*
+%{_mandir}/man1/rmdtopvf.1*
+%{_mandir}/man1/voctopvf.1*
 %{_mandir}/man1/wavtopvf.1*
+%{_mandir}/man1/zplay.1*
 %{_mandir}/man8/vgetty.8*
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/mgetty+sendfax/voice.conf
 
@@ -323,9 +328,8 @@ fi
 %{_bindir}/viewfax
 %dir %{_prefix}/lib/mgetty+sendfax
 %{_prefix}/lib/mgetty+sendfax/viewfax.tif
-%{_mandir}/man1/viewfax.1.*
+%{_mandir}/man1/viewfax.1*
 
 %files contrib
 %defattr(644,root,root,755)
 %doc contrib/*
-
