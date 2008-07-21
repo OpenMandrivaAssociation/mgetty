@@ -5,7 +5,7 @@
 Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
 Version:	%{version}
-Release:	%mkrel 5
+Release:	%mkrel 6
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
 Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://mgetty.greenie.net/
@@ -19,7 +19,7 @@ Patch8:		mgetty-1.1.35-noroot.patch
 Patch9:		mgetty-1.1.21-linkman.patch
 Patch13:	mgetty-1.1.35-force_detect.patch
 Patch14:	mgetty-1.1.30-mktemp.patch
-Requires:	libgr-progs netpbm
+Requires:	netpbm
 License:	GPL
 Group:		Communications
 BuildRequires:	groff-for-man
