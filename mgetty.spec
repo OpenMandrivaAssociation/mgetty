@@ -5,7 +5,7 @@
 Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
 Version:	%{version}
-Release:	%mkrel 6
+Release:	%mkrel 7
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
 Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://mgetty.greenie.net/
@@ -96,9 +96,9 @@ The contents of the contrib directory that comes with %{name}.
 %prep
 %setup -q
 cp policy.h-dist policy.h
-%patch0 -p1 -b .config
+%patch0 -p0 -b .config
 %patch1 -p1 -b .makekvg
-%patch2 -p1
+%patch2 -p0 -b .policy
 %patch3 -p1 -b .strip
 %patch4 -p1 -b .echo
 %patch5 -p1
