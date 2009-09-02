@@ -5,7 +5,7 @@
 Summary:	A getty replacement for use with data and fax modems
 Name:		%{name}
 Version:	%{version}
-Release:	%mkrel 7
+Release:	%mkrel 8
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
 Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://mgetty.greenie.net/
