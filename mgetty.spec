@@ -1,11 +1,9 @@
-%define name 	mgetty
-%define version 1.1.36
 %define Date Jun15
 
 Summary:	A getty replacement for use with data and fax modems
-Name:		%{name}
-Version:	%{version}
-Release:	%mkrel 11
+Name:		mgetty
+Version:	1.1.36
+Release:	12
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
 Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://mgetty.greenie.net/
@@ -30,7 +28,6 @@ BuildRequires:	rman
 BuildRequires:	tetex-dvips
 BuildRequires:	tetex-latex
 BuildRequires:	texinfo
-Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %package	sendfax
 Summary:	Provides support for sending faxes over a modem
@@ -119,11 +116,9 @@ make
 cd ../frontends/X11/viewfax
 xmkmf
 make depend
-make CDEBUGFLAGS="$RPM_OPT_FLAGS"
+make CDEBUGFLAGS="%{optflags}"
 
 %install
-rm -rf %{buildroot}
-
 mkdir -p %{buildroot}/var/spool -p %{buildroot}/sbin
 make prefix=%{buildroot}/usr spool=%{buildroot}/var/spool \
 	CONFDIR=%{buildroot}/etc/mgetty+sendfax install
@@ -175,18 +170,6 @@ rm -f %{buildroot}/usr/bin/g3topbm
 install -m0644 voice/man/man1/*.1 %{buildroot}%{_mandir}/man1/
 install -m0644 voice/man/man8/*.8 %{buildroot}%{_mandir}/man8/
 
-%clean
-rm -rf %{buildroot}
-
-%post
-%_install_info %{name}.info
-
-%postun
-if [ $1 = 0 ]; then
-  %{__rm} -fr /var/log/mgetty.log*
-fi
-%_remove_install_info %{name}.info
-
 %pre sendfax
 %_pre_useradd fax %{_var}/spool/fax /bin/sh
 
@@ -197,7 +180,6 @@ if [ $1 = 0 ]; then
 fi
 
 %files
-%defattr(-,root,root)
 %doc ChangeLog README.1st THANKS TODO Recommend FTP samples/*
 %doc doc/mgetty.ps doc/mgetty.dvi doc/mgetty.texi  doc/fhng-codes doc/modems.db
 %doc BUGS doc/*.txt
@@ -215,13 +197,9 @@ fi
 
 
 %files sendfax
-%defattr(-,root,root)
-
 %attr(755,fax,fax) %dir %{_var}/spool/fax
 %attr(755,fax,fax) %dir %{_var}/spool/fax/incoming
 %attr(755,fax,fax) %dir %{_var}/spool/fax/outgoing
-#%attr(755,fax,fax) %dir %{_var}/spool/fax/outgoing/locks
-
 %{_bindir}/kvg
 %{_bindir}/newslock
 %{_bindir}/g3cat
@@ -261,11 +239,9 @@ fi
 %config(noreplace) %{_sysconfdir}/logrotate.d/sendfax
 
 %files voice
-%defattr(-,root,root)
 %dir %{_var}/spool/voice
 %dir %{_var}/spool/voice/incoming
 %dir %{_var}/spool/voice/messages
-
 %attr(755,root,root) /sbin/vgetty
 %{_bindir}/vm
 %{_bindir}/pvfamp
@@ -323,7 +299,6 @@ fi
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/mgetty+sendfax/voice.conf
 
 %files viewfax
-%defattr(-,root,root)
 %doc frontends/X11/viewfax/C* frontends/X11/viewfax/README
 %{_bindir}/viewfax
 %dir %{_prefix}/lib/mgetty+sendfax
@@ -333,3 +308,88 @@ fi
 %files contrib
 %defattr(644,root,root,755)
 %doc contrib/*
+
+
+%changelog
+* Wed May 04 2011 Oden Eriksson <oeriksson@mandriva.com> 1.1.36-11mdv2011.0
++ Revision: 666421
+- mass rebuild
+
+* Fri Dec 03 2010 Oden Eriksson <oeriksson@mandriva.com> 1.1.36-10mdv2011.0
++ Revision: 606639
+- rebuild
+
+* Sun Mar 14 2010 Oden Eriksson <oeriksson@mandriva.com> 1.1.36-9mdv2010.1
++ Revision: 519040
+- rebuild
+
+* Thu Sep 03 2009 Christophe Fergeau <cfergeau@mandriva.com> 1.1.36-8mdv2010.0
++ Revision: 426091
+- rebuild
+
+* Sun Dec 21 2008 Oden Eriksson <oeriksson@mandriva.com> 1.1.36-7mdv2009.1
++ Revision: 317096
+- rediffed some fuzzy patches
+
+* Mon Jul 21 2008 Oden Eriksson <oeriksson@mandriva.com> 1.1.36-6mdv2009.0
++ Revision: 239494
+- fix deps
+
+* Tue Jun 17 2008 Thierry Vignaud <tv@mandriva.org> 1.1.36-5mdv2009.0
++ Revision: 223256
+- rebuild
+
+* Wed Mar 05 2008 Oden Eriksson <oeriksson@mandriva.com> 1.1.36-4mdv2008.1
++ Revision: 180100
+- fix build
+- rebuild
+
+  + Thierry Vignaud <tv@mandriva.org>
+    - fix spacing at top of description
+    - rebuild
+    - rebuild
+    - fix prereq on rpm-helper
+    - kill re-definition of %%buildroot on Pixel's request
+    - fix man pages extension
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+* Mon Jun 18 2007 Adam Williamson <awilliamson@mandriva.org> 1.1.36-1mdv2008.0
++ Revision: 40716
+- new release 1.1.36; drop patches 12 and 15 (equivalent merged upstream)
+
+* Sun Jun 10 2007 Adam Williamson <awilliamson@mandriva.org> 1.1.35-2mdv2008.0
++ Revision: 37810
+- patch15: use giftopnm not giftoppm (bug #19936, thanks Bill Unruh)
+
+* Mon Apr 23 2007 Olivier Blin <oblin@mandriva.com> 1.1.35-1mdv2008.0
++ Revision: 17368
+- update url
+- 1.1.35
+- drop includes and imakefile patches
+- rediff noroot and force_detect patches
+- add sff2g3
+
+
+* Sun Jul 02 2006 Stefan van der Eijk <stefan@mandriva.org> 1.1.30-10
+- %%mkrel
+- BuildRequires
+
+* Sun Jan 01 2006 Mandriva Linux Team <http://www.mandrivaexpert.com/> 1.1.30-9mdk
+- Rebuild
+
+* Sat Dec 25 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 1.1.30-8mdk
+- fix buildrequires
+- fix summary-ended-with-dot
+- cosmetics
+
+* Sun Sep 26 2004 Frederic Lepied <flepied@mandrakesoft.com> 1.1.30-7mdk
+- fixed conflict with netpbm
+
+* Wed Apr 14 2004 Gwenole Beauchesne <gbeauchesne@mandrakesoft.com> 1.1.30-6mdk
+- add missing files, symlinks
+
+* Thu Sep 18 2003 Gwenole Beauchesne <gbeauchesne@mandrakesoft.com> 1.1.30-5mdk
+- fix 64-bit fixes patch (#5767)
+
