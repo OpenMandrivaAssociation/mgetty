@@ -3,7 +3,7 @@
 Summary:	A getty replacement for use with data and fax modems
 Name:		mgetty
 Version:	1.1.36
-Release:	12
+Release:	13
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
 Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://mgetty.greenie.net/
@@ -277,6 +277,7 @@ fi
 %{_mandir}/man1/pvfcut.1*
 %{_mandir}/man1/pvfecho.1*
 %{_mandir}/man1/pvfff.1*
+%{_mandir}/man1/pvffft.1*
 %{_mandir}/man1/pvffile.1*
 %{_mandir}/man1/pvffilter.1*
 %{_mandir}/man1/pvfmix.1*
