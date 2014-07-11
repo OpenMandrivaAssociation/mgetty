@@ -3,7 +3,7 @@
 Summary:	A getty replacement for use with data and fax modems
 Name:		mgetty
 Version:	1.1.36
-Release:	18
+Release:	19
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz
 Source1:	ftp://mgetty.greenie.net/pub/mgetty/source/1.1/%{name}%{version}-%{Date}.tar.gz.asc
 URL:		http://mgetty.greenie.net/
