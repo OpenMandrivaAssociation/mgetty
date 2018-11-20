@@ -18,6 +18,7 @@ Patch8:		mgetty-1.1.35-noroot.patch
 Patch9:		mgetty-1.1.21-linkman.patch
 Patch13:	mgetty-1.1.35-force_detect.patch
 Patch14:	mgetty-1.1.30-mktemp.patch
+Patch15:	mgetty-1.1.37-gcc7.patch
 Requires:	netpbm
 License:	GPL
 Group:		Communications
@@ -26,8 +27,8 @@ BuildRequires:	gccmakedep
 BuildRequires:	imake
 BuildRequires:	libxext-devel
 BuildRequires:	rman
-BuildRequires:	tetex-dvips
-BuildRequires:	tetex-latex
+#BuildRequires:	tetex-dvips
+#BuildRequires:	tetex-latex
 BuildRequires:	texinfo
 
 %package	sendfax
@@ -106,6 +107,7 @@ cp policy.h-dist policy.h
 %patch9 -p1
 %patch13 -p1 -b .force_detect
 %patch14 -p1 -b .mktemp
+%patch15 -p1 -b .gcc7
 
 %build
 make
@@ -183,7 +185,7 @@ fi
 
 %files
 %doc ChangeLog README.1st THANKS TODO Recommend FTP samples/*
-%doc doc/mgetty.ps doc/mgetty.dvi doc/mgetty.texi  doc/fhng-codes doc/modems.db
+# % doc doc/mgetty.ps doc/mgetty.dvi doc/mgetty.texi  doc/fhng-codes doc/modems.db
 %doc BUGS doc/*.txt
 %attr(755,root,root) /sbin/mgetty
 %{_mandir}/man8/mgetty.8*
