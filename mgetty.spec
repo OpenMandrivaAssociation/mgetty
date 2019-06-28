@@ -243,7 +243,6 @@ exit 0
 %{_mandir}/man4/mgettydefs.4*
 %{_mandir}/man8/mgetty.8*
 %{_mandir}/man8/callback.8*
-%{_infodir}/mgetty.info*
 %dir %{_sysconfdir}/mgetty+sendfax
 %config(noreplace) %{_sysconfdir}/mgetty+sendfax/login.config
 %config(noreplace) %{_sysconfdir}/mgetty+sendfax/mgetty.config
