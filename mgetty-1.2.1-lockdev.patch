@@ -1,0 +1,193 @@
+diff --git a/locks.c b/locks.c
+index 649ed4a..aa8898c 100644
+--- a/locks.c
++++ b/locks.c
+@@ -41,6 +41,10 @@
+  
+ #define LCK_NODEV    -1
+ #define LCK_OPNFAIL  -2
++#endif
++
++#ifdef HAVE_LOCKDEV
++#include <lockdev.h>
+ #endif
+ 
+        char	lock[MAXLINE+1];	/* name of the lockfile */
+@@ -58,6 +62,7 @@ static int we_have_lock = FALSE;
+ 
+ int do_makelock _P0( void )
+ {
++#ifndef HAVE_LOCKDEV
+ 	int fd, pid;
+ 	char *temp, buf[MAXLINE+1];
+ #ifndef HAVE_MKSTEMP
+@@ -148,8 +153,26 @@ again:
+ 		return(FAIL);
+ 	}
+ 	
+-	lprintf(L_NOISE, "lock made");
+ 	(void) unlink(temp);
++#else
++        pid_t device_owner;
++
++        device_owner = dev_lock(lock);
++        if (device_owner < 0)
++        {
++                lprintf(L_ERROR, "lock not made: dev_lock(%s) failed", lock);
++                return FAIL;
++        }
++
++        if (device_owner > 0)
++        {
++                lprintf(L_MESG, "lock not made: lock file exists (pid=%d)", device_owner);
++                return FAIL;
++        }
++
++#endif
++
++        lprintf(L_NOISE, "lock made");
+ 	we_have_lock = TRUE;
+ 	return(SUCCESS);
+ }
+@@ -180,8 +203,8 @@ int makelock _P1( (device),
+  */
+ int steal_lock _P2((device, pid), char * device, int pid )
+ {
+-    int retcode, is_pid, fd;
+-    
++    int retcode = SUCCESS;
++
+     lprintf(L_NOISE, "steal_lock(%s) called", device);
+ 
+     if ( get_lock_name( lock, device ) == NULL )
+@@ -190,6 +213,9 @@ int steal_lock _P2((device, pid), char * device, int pid )
+ 	return FAIL;
+     }
+ 
++#ifndef HAVE_LOCKDEV
++    int is_pid, fd;
++
+     is_pid = readlock(lock);
+ 
+     if ( is_pid != pid )
+@@ -208,6 +234,13 @@ int steal_lock _P2((device, pid), char * device, int pid )
+     }
+ 
+     retcode = lock_write_pid( fd );
++#else
++    if (dev_relock(lock, pid) < 0)
++    {
++            lprintf( L_ERROR, "can't steal lock: dev_relock(%s, %d) failed", device, pid);
++            retcode = FAIL;
++    }
++#endif
+ 
+     if ( retcode == SUCCESS ) we_have_lock = TRUE;
+     return retcode;
+@@ -237,7 +270,6 @@ int makelock_file _P1( (file), char * file )
+ int checklock _P1( (device), char * device)
+ {
+     int pid;
+-    struct stat st;
+     char name[MAXLINE+1];
+     
+     if ( get_lock_name( name, device ) == NULL )
+@@ -246,6 +278,9 @@ int checklock _P1( (device), char * device)
+ 	return NO_LOCK;
+     }
+ 
++#ifndef HAVE_LOCKDEV
++    struct stat st;
++
+     if ((stat(name, &st) == FAIL) && errno == ENOENT)
+     {
+ 	lprintf(L_NOISE, "checklock: stat failed, no file");
+@@ -270,12 +305,27 @@ int checklock _P1( (device), char * device)
+ 	(void) unlink(name);
+ 	return NO_LOCK;
+     }
+-    
++#else
++    pid = dev_testlock(name);
++
++    if (pid < 0)
++    {
++            lprintf(L_ERROR, "checklock: can't check lockfile, dev_testlock(%s) failed", name);
++            return NO_LOCK;
++    }
++
++    if (pid == 0)
++    {
++            lprintf(L_MESG, "checklock: device not locked");
++            return NO_LOCK;
++    }
++#endif
+     lprintf(L_NOISE, "lockfile found, pid=%d", pid );
+     
+     return pid;
+ }
+ 
++#ifndef HAVE_LOCKDEV
+ /*
+  *	readlock() - read contents of lockfile
+  *
+@@ -342,6 +392,8 @@ static int lock_write_pid _P1((fd), int fd)
+     close(fd);
+     return SUCCESS;
+ }
++
++#endif
+ 	
+ /*
+  *	rmlocks() - remove lockfile
+@@ -352,8 +404,13 @@ void rmlocks _P0(void)
+     if ( we_have_lock )
+     {
+ 	lprintf( L_NOISE, "removing lock file" );
++#ifndef HAVE_LOCKDEV
+ 	if ( unlink(lock) == -1 )
+ 	    lprintf( L_ERROR, "error removing lock file (huh?!)" );
++#else
++        if (dev_unlock(lock, getpid()) < 0)
++             lprintf(L_ERROR, "error removing lock file, dev_unlock(%s) failed", lock);
++#endif
+     }
+     /* mark lock file as 'not set' */
+     we_have_lock = FALSE;
+@@ -364,7 +421,21 @@ void rmlocks _P0(void)
+  * determine full path + name of the lock file for a given device
+  */
+ 
+-#ifdef SVR4
++#ifdef HAVE_LOCKDEV
++/*
++ * lockdev API provides us with the way to lock device directly, thus lock name
++ * and device name are the same
++ */
++static char *get_lock_name _P2( (lock, device), char *lock, char *device )
++{
++        lprintf(L_NOISE, "get_lock_name(%s) called", device);
++
++        snprintf(lock, MAXLINE, "%s", device);
++        
++        return lock;
++}
++
++#elif SVR4
+ 
+ /*
+  * get_lock_name() - create SVR4 lock file name (Bodo Bauer)
+diff --git a/mgetty.h b/mgetty.h
+index 64053fd..c6ddd58 100644
+--- a/mgetty.h
++++ b/mgetty.h
+@@ -277,6 +277,9 @@ int		makelock_file _PROTO(( char * lockname ));
+ int		checklock _PROTO((char * device));
+ void		rmlocks _PROTO ((void));
+ int		steal_lock _PROTO((char * device, int pid ));
++#ifdef HAVE_LOCKDEV
++extern char lockdev_device[MAXLINE + 1];
++#endif
+   
+ /* fax stuff */
+ void	faxrec _PROTO(( char * spool_dir, unsigned int switchbd,

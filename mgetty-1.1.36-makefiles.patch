@@ -1,0 +1,61 @@
+diff -up mgetty-1.1.37/callback/Makefile.makefile mgetty-1.1.37/callback/Makefile
+--- mgetty-1.1.37/callback/Makefile.makefile	2006-02-22 17:50:49.000000000 +0100
++++ mgetty-1.1.37/callback/Makefile	2016-11-16 14:08:42.709133483 +0100
+@@ -37,7 +37,7 @@ clean:
+ # install programs
+ #
+ install: all
+-	$(INSTALL) -s -m 700 -o root callback $(SBINDIR)
+-	$(INSTALL) -s -m 4711 -o root ct $(BINDIR)
++	$(INSTALL) -m 700 -o root callback $(SBINDIR)
++	$(INSTALL) -m 4711 -o root ct $(BINDIR)
+ 
+ # source modules
+diff -up mgetty-1.1.37/frontends/X11/viewfax/Makefile.makefile mgetty-1.1.37/frontends/X11/viewfax/Makefile
+--- mgetty-1.1.37/frontends/X11/viewfax/Makefile.makefile	2004-11-14 21:38:24.000000000 +0100
++++ mgetty-1.1.37/frontends/X11/viewfax/Makefile	2016-11-16 14:08:42.709133483 +0100
+@@ -61,7 +61,7 @@ viewfax:	$(OBJS)
+ g3hack:		g3hack.c
+ 
+ install: viewfax
+-	$(INSTALL) -s -m 755 viewfax $(BINDIR)
++	$(INSTALL) -m 755 viewfax $(BINDIR)
+ 	$(INSTALL) -m 644 viewfax.man $(MANDIR)/viewfax.1
+ 	$(INSTALL) -m 644 viewfax.tif $(LIBDIR)
+ 
+diff -up mgetty-1.1.37/g3/Makefile.makefile mgetty-1.1.37/g3/Makefile
+--- mgetty-1.1.37/g3/Makefile.makefile	2006-02-22 18:25:34.000000000 +0100
++++ mgetty-1.1.37/g3/Makefile	2016-11-16 14:08:42.709133483 +0100
+@@ -37,7 +37,7 @@ install: all
+ # install programs
+ #
+ 	for f in $(G3_PROGRAMS) ; do \
+-		$(INSTALL) -s -m 755 $$f $(BINDIR) ; \
++		$(INSTALL) -m 755 $$f $(BINDIR) ; \
+ 	done
+ #
+ # make symlink for "g3topbm" (so third-party fax viewers won't fail)
+diff -up mgetty-1.1.37/Makefile.makefile mgetty-1.1.37/Makefile
+--- mgetty-1.1.37/Makefile.makefile	2016-11-16 14:08:42.686133637 +0100
++++ mgetty-1.1.37/Makefile	2016-11-16 14:11:46.236903899 +0100
+@@ -601,8 +601,8 @@ install.bin: mgetty sendfax newslock \
+ 		mv -f $(SBINDIR)/mgetty $(SBINDIR)/mgetty.old ; fi
+ 	if [ -f $(SBINDIR)/sendfax ] ; then \
+ 		mv -f $(SBINDIR)/sendfax $(SBINDIR)/sendfax.old ; fi
+-	$(INSTALL) -s -m 700 mgetty $(SBINDIR)
+-	$(INSTALL) -s -m 755 sendfax $(SBINDIR)
++	$(INSTALL) -m 700 mgetty $(SBINDIR)
++	$(INSTALL) -m 755 sendfax $(SBINDIR)
+ #
+ # data files + directories
+ #
+@@ -664,7 +664,7 @@ install.bin: mgetty sendfax newslock \
+ 	if [ ! -z "$(INSTALL_MECHO)" ] ; then \
+ 	    cd compat ; \
+ 	    $(CC) $(CFLAGS) -o mg.echo mg.echo.c && \
+-	    $(INSTALL) -s -m 755 mg.echo $(BINDIR) ; \
++	    $(INSTALL) -m 755 mg.echo $(BINDIR) ; \
+ 	fi
+ 
+ #
+diff -up mgetty-1.1.37/voice/.makefile mgetty-1.1.37/voice/

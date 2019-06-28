@@ -1,9 +1,8 @@
-Use mktemp to create the stdin temporary file.  Not portable to systems
-without mktemp, unfortunately.
-
---- mgetty-1.1.30/fax/faxspool.in	2002-12-18 16:59:16.000000000 -0500
-+++ mgetty-1.1.30/fax/faxspool.in	2002-12-18 17:06:43.000000000 -0500
-@@ -637,10 +637,14 @@
+diff --git a/fax/faxspool.in b/fax/faxspool.in
+index 2a2ee2c..2be42fc 100644
+--- a/fax/faxspool.in
++++ b/fax/faxspool.in
+@@ -708,10 +708,14 @@ do
  #
      if [ x$file = x- ]
      then

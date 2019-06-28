@@ -1,0 +1,31 @@
+diff -up mgetty-1.1.36/voice/man/man8/vgetty.8.sd mgetty-1.1.36/voice/man/man8/vgetty.8
+--- mgetty-1.1.36/voice/man/man8/vgetty.8.sd	2001-12-22 23:52:43.000000000 +0100
++++ mgetty-1.1.36/voice/man/man8/vgetty.8	2012-11-22 16:21:22.744169858 +0100
+@@ -10,8 +10,13 @@ vgetty \- voice extension to the mgetty+
+ .RI ttydevice
+ 
+ .B vgetty
+-is not meant to be run from the command line. It should be
+-run from the /etc/inittab file so it can respawn after each
++is not meant to be run from the command line.
++
++Systems with
++.B SysV initscripts
++should start
++.B vgetty
++from the /etc/inittab file so it can respawn after each
+ call. Here is a typical inittab entry:
+ 
+ S0:345:respawn:/usr/local/sbin/vgetty ttyS0
+@@ -21,6 +26,11 @@ If you already have a line in your initt
+ replace it with
+ .B vgetty,
+ since it replaces/extends its functionality.
++
++.B systemd
++\-
++.B vgetty 
++contains vgetty@.service unit file template. It is possible to enable an instance of a vgetty to run on a particular device (e.g. systemctl enable vgetty@ttyS0.service). See systemd.unit(5) for further details.
+ .SH DESCRIPTION
+ .B vgetty
+ is an extension to the mgetty+sendfax program which provides

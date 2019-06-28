@@ -1,0 +1,15 @@
+diff --git a/policy.h b/policy.h
+index 57ccfdb..2294187 100644
+--- a/policy.h
++++ b/policy.h
+@@ -581,6 +581,10 @@
+ # define NEED_MAIL_TO_ON_CLI
+ #endif
+ 
++#ifdef linux
++# define MAILER         "/usr/sbin/sendmail"
++# define NEED_MAIL_HEADERS
++#endif
+ #ifndef MAILER
+ # define MAILER		"/usr/sbin/sendmail -t -i"
+ #endif

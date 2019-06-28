@@ -1,0 +1,55 @@
+diff --git a/fax/faxrunq.in b/fax/faxrunq.in
+index 75e9744..cc01a91 100644
+--- a/fax/faxrunq.in
++++ b/fax/faxrunq.in
+@@ -177,17 +177,18 @@ do
+ # read job using 'tr', remove all quote characters, dollar, and backslash
+ #
+     eval `tr -d '\042\047\140\134\044\073' <JOB | \
+-	  $AWK 'BEGIN { user=""; mail=""; verbto=""; time=""; re=""; ah=""; }
++	 $AWK 'BEGIN { user=""; mail=""; verbto=""; time=""; time_to=""; re=""; ah=""; } 
+ 		$1=="user" { user=$2 }
+ 		$1=="mail" { mail=substr( $0, 6) }
+ 		$1=="phone" { printf "PHONE=\"%s\";", $2 }
+-		$1=="time" { time=$2 }
++		$1=="time" { time=substr($2,1,4); time_to=substr($2,6,4); }
+ 		$1=="verbose_to" { verbto=substr($0,12) }
+ 		$1=="subject" { re=substr($0,9) }
+ 		$1=="acct_handle" { ah=substr($0,13) }
+ 		END { if ( mail != "" ) printf "MAIL_TO=\"%s\";", mail
+ 				   else printf "MAIL_TO=\"%s\";", user
+ 		      printf "TIME=\"%s\";", time
++		      printf "TIME_TO=\"%s\";", time_to
+ 		      printf "VERBOSE_TO=\"%s\";", verbto
+ 		      printf "RE=\"%s\"; AH=\"%s\"", re, ah }' - `
+ 
+@@ -196,11 +197,25 @@ do
+ #
+     if [ ! -z "$TIME" ]
+     then
+-	if [ `date "+%H""%M"` -lt $TIME ]
++	if [ -z $TIME_TO ]	
+ 	then
+-	    $echo "...send time not reached, postponing job"
+-	    rm JOB.locked
+-	    continue
++           TIME_TO="0000"
++        fi
++        if [ $TIME -lt $TIME_TO ]
++        then
++            if [ `date "+%H""%M"` -lt $TIME -o `date "+%H""%M"` -gt $TIME_TO ]
++            then
++                $echo "...send time not reached, postponing job"
++                rm JOB.locked
++                continue
++            fi
++        else
++            if [ `date "+%H""%M"` -lt $TIME -o `date "+%H""%M"` -lt $TIME_TO ]
++            then
++                $echo "...send time not reached, postponing job"
++                rm JOB.locked
++                continue
++            fi
+ 	fi
+     fi
+ 

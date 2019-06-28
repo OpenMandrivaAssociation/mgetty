@@ -1,0 +1,7 @@
+#
+# Entry for rotating vgetty log files.
+#
+/var/log/vgetty.tty*.log /var/log/vgetty.unknown.log /var/log/vgetty.callback.log {
+	nocompress
+	missingok
+}

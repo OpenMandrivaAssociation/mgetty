@@ -1,0 +1,97 @@
+diff --git a/logfile.c b/logfile.c
+index cd92d39..cf7c5c3 100644
+--- a/logfile.c
++++ b/logfile.c
+@@ -22,6 +22,7 @@
+ #endif
+ 
+ #ifdef SYSLOG
++#include <signal.h>
+ #include <syslog.h>
+ 
+ #if !defined(linux) && !defined(BSD) && !defined(_SCO_DS) && \
+@@ -213,6 +214,7 @@ va_list pvar;
+ int     errnr;
+ char * p;
+ static int first_open = TRUE;
++sigset_t ss, oss;
+ 
+     if ( level > log_level )	/* log level high enough? */
+     {
+@@ -316,7 +318,24 @@ static int first_open = TRUE;
+ 		             tm->tm_mon+1,  tm->tm_mday,
+ 			     tm->tm_hour, tm->tm_min, tm->tm_sec, ws );
+ #ifdef SYSLOG
++        /* block all handled signals before syslog(), else an lprintf in
++         * a signal handler could deadlock
++	 */
++	sigemptyset(&ss);
++	sigaddset(&ss, SIGALRM);
++	sigaddset(&ss, SIGCHLD);
++	sigaddset(&ss, SIGHUP);
++	sigaddset(&ss, SIGINT);
++	sigaddset(&ss, SIGPIPE);
++	sigaddset(&ss, SIGQUIT);
++	sigaddset(&ss, SIGTERM);
++	sigaddset(&ss, SIGUSR1);
++	sigaddset(&ss, SIGUSR2);
++	sigprocmask(SIG_BLOCK, &ss, &oss);
++
+ 	syslog( LOG_NOTICE, "%s", ws );
++
++	sigprocmask(SIG_SETMASK, &oss, 0L);
+ #endif
+     }
+     else if ( level != L_ERROR && level != L_FATAL )
+@@ -335,7 +354,21 @@ static int first_open = TRUE;
+ 			     ( errnr <= sys_nerr ) ? sys_errlist[errnr]:
+ 			     "<error not in list>" );
+ #ifdef SYSLOG
++	sigemptyset(&ss);
++	sigaddset(&ss, SIGALRM);
++	sigaddset(&ss, SIGCHLD);
++	sigaddset(&ss, SIGHUP);
++	sigaddset(&ss, SIGINT);
++	sigaddset(&ss, SIGPIPE);
++	sigaddset(&ss, SIGQUIT);
++	sigaddset(&ss, SIGTERM);
++	sigaddset(&ss, SIGUSR1);
++	sigaddset(&ss, SIGUSR2);
++	sigprocmask(SIG_BLOCK, &ss, &oss);
++
+ 	syslog( level == L_FATAL? LOG_ALERT: LOG_ERR, "%s: %m", ws );
++
++	sigprocmask(SIG_SETMASK, &oss, 0L);
+ #endif
+ 
+ #ifndef SYSLOG
+diff --git a/logname.c b/logname.c
+index cb76f20..c2c50a9 100644
+--- a/logname.c
++++ b/logname.c
+@@ -381,10 +381,12 @@ int getlogname _P7( (prompt, tio, buf, maxsize, max_login_time,
+ 	    {
+ 		printf( "\r\n\07\r\nYour login time (%d minutes) ran out. Goodbye.\r\n",
+ 		       (max_login_time / 60)+1 );
+-		
++		signal(SIGALRM,SIG_DFL);/* turn off alarm */
++		alarm(0);               
+ 		sleep(3);		/* give message time to xmit */
+ 		lprintf( L_AUDIT, "failed dev=%s, pid=%d, login time out",
+ 			 Device, getpid() );
++		tcflush(1,TCOFLUSH);    /* allow us to exit without hanging (bug 164002) */
+ 		exit(0);		/* bye bye... */
+ 	    }
+ 	    ch = CKILL;			/* timeout #1 -> clear input */
+diff --git a/mgetty.c b/mgetty.c
+index c9bcb7a..155eead 100644
+--- a/mgetty.c
++++ b/mgetty.c
+@@ -143,6 +143,7 @@ static RETSIGTYPE sig_goodbye _P1 ( (signo), int signo )
+     lprintf( L_AUDIT, "failed dev=%s, pid=%d, got signal %d, exiting",
+ 	              Device, getpid(), signo );
+     rmlocks();
++    tcflush(1,TCOFLUSH);
+     exit(10);
+ }
+ 

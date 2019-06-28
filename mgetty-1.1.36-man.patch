@@ -1,0 +1,56 @@
+--- mgetty-1.1.36/doc/mgetty.8in.man	2010-12-16 10:20:09.000000000 +0000
++++ mgetty-1.1.36/doc/mgetty.8in	2011-01-30 16:51:29.000000000 +0000
+@@ -8,7 +8,7 @@
+ .RI ttydevice
+ .RI [ gettydefs ]
+ .SH DESCRIPTION
+-Mgetty is a ``smart'' getty replacement, designed to be used with hayes
++Mgetty is a ``smart'' getty replacement, designed for use with Hayes
+ compatible data and data/fax modems.
+ Mgetty knows about modem initialization, manual modem answering (so your
+ modem doesn't answer if the machine isn't ready), UUCP locking (so you can
+@@ -80,7 +80,7 @@
+ .B -D
+ Tells
+ .I mgetty
+-that the modem is to be treated as a DATA modem, no fax initalization is
++that the modem is to be treated as a DATA modem, no fax initialization is
+ attempted.
+ .TP
+ .B -F
+@@ -112,9 +112,9 @@
+ .I mgetty
+ is called as
+ .I getty.
+-You may want to use this if you want to make use of the two-device /
++You may want to use this if you want to use the two-device /
+ kernel-locking scheme of the Linux and SunOS operating systems
+-(/dev/ttyS.. and /dev/cua..). I do not recommend it, it's just include for
++(/dev/ttyS.. and /dev/cua..). I do not recommend it, it's just included for
+ completeness, and to be able to use mgetty as a full-featured getty
+ replacement.
+ .TP
+@@ -125,11 +125,11 @@
+ speed to the first integer found after the "CONNECT" string, "foo" in this
+ example. You need this if your modem insist on changing its DTE speed to
+ match the line speed. I recommend against using it, better leave the port
+-speed locked at a fixed value. The feature is included because there
+-exist old modems that cannot use a fixed (locked) port speed.
++speed locked at a fixed value. The feature is included because
++old modems exist which cannot use a fixed (locked) port speed.
+ .TP
+ .B -m 'expect send ...'
+-Set the "chat sequence" that is used to initialize the modem. For an empty
++Set the "chat sequence" used to initialize the modem. For an empty
+ expect part, use empty double quotes (""). Since the sequence contains
+ spaces, you have to enclose all of it in single quotes(''). Example:
+ 
+@@ -184,7 +184,7 @@
+ Not all of
+ .I mgetty
+ configuration can be done at run-time yet. Things like flow control and
+-file paths (log file / lock file) have to be configured by changing the
++file paths (log file / lock file) must be configured by changing the
+ source and recompiling.
+ 
+ Users never read manuals...

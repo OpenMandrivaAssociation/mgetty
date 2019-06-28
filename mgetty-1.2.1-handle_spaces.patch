@@ -1,0 +1,327 @@
+diff --git a/fax/faxspool.in b/fax/faxspool.in
+index 1f65a9c..a9a329d 100644
+--- a/fax/faxspool.in
++++ b/fax/faxspool.in
+@@ -188,11 +188,11 @@ PATH=@BINDIR@:$PATH
+ 
+ # change coverpage/header defaults to per-user files, if $HOME exists
+ if [ -d "$HOME" ]; then
+-  if [ -r $HOME/.make.coverpg ]; then
++  if [ -r "$HOME/.make.coverpg" ]; then
+     MAKE_COVER_PG=$HOME/.make.coverpg
+   fi
+-  if [ -r $HOME/.faxheader ]; then
+-    FAX_HEADER=$HOME/.faxheader
++  if [ -r "$HOME/.faxheader" ]; then
++    FAX_HEADER="$HOME/.faxheader"
+   fi
+ fi
+ 
+@@ -217,7 +217,7 @@ fi
+ #
+ fs_cvt_pbm()
+ {
+-    pbm2g3 $1 >$2.001
++    pbm2g3 "$1" >"$2.001"
+ }
+ 
+ #
+@@ -225,7 +225,7 @@ fs_cvt_pbm()
+ #
+ fs_cvt_pgm()
+ {
+-    pgmtopbm $1 | pbm2g3 >$2.001
++    pgmtopbm "$1" | pbm2g3 >"$2.001"
+ }
+ 
+ #
+@@ -233,7 +233,7 @@ fs_cvt_pgm()
+ #
+ fs_cvt_ppm()
+ {
+-    ppmtopgm $1 | pgmtopbm | pbm2g3 >$2.001
++    ppmtopgm "$1" | pgmtopbm | pbm2g3 >"$2.001"
+ }
+ 
+ #
+@@ -243,7 +243,7 @@ fs_cvt_ppm()
+ #
+ fs_cvt_g3()
+ {
+-    g3cat $1 >$2.001
++    g3cat "$1" >"$2.001"
+ }
+ 
+ #
+@@ -255,14 +255,14 @@ fs_cvt_g3()
+ fs_cvt_xwd()
+ {
+     REDUCE="cat"
+-    test X$3 = X-n && REDUCE="pnmscale -yscale 0.5"
++    test "$3" = "-n" && REDUCE="pnmscale -yscale 0.5"
+ 
+-    xwdtopnm $1 |\
++    xwdtopnm "$1" |\
+ 	pnmscale -xysize 1728 2000 |\
+ 	$REDUCE |\
+ 	ppmtopgm |\
+ 	pgmtopbm |\
+-	pbm2g3 >$2.001
++	pbm2g3 >"$2.001"
+ }
+ 
+ #
+@@ -273,14 +273,14 @@ fs_cvt_xwd()
+ fs_cvt_gif()
+ {
+     REDUCE="cat"
+-    test X$3 = X-n && REDUCE="pnmscale -yscale 0.5"
++    test "$3" = "-n" && REDUCE="pnmscale -yscale 0.5"
+ 
+-    giftopnm $1 |\
++    giftopnm "$1" |\
+ 	pnmscale -xysize 1728 2000 |\
+ 	$REDUCE |\
+ 	ppmtopgm |\
+ 	pgmtopbm |\
+-	pbm2g3 >$2.001
++	pbm2g3 >"$2.001"
+ }
+ 
+ #
+@@ -291,14 +291,14 @@ fs_cvt_gif()
+ fs_cvt_tif()
+ {
+     REDUCE="cat"
+-    test X$3 = X-n && REDUCE="pnmscale -yscale 0.5"
++    test "$3" = "-n" && REDUCE="pnmscale -yscale 0.5"
+ 
+-    tifftopnm $1 |\
++    tifftopnm "$1" |\
+ 	pnmscale -xysize 1728 2000 |\
+ 	$REDUCE |\
+ 	ppmtopgm |\
+ 	pgmtopbm |\
+-	pbm2g3 >$2.001
++	pbm2g3 >"$2.001"
+ }
+ 
+ #
+@@ -307,11 +307,11 @@ fs_cvt_tif()
+ #
+ fs_cvt_lj()
+ {
+-    if [ X$3 = X-n ]
++    if [ "$3" = "-n" ]
+     then
+-        hp2log3 -r$2 <$1
++        hp2log3 "-r$2" <"$1"
+     else
+-        hp2hig3 -r$2 <$1
++        hp2hig3 "-r$2" <"$1"
+     fi
+ }
+ 
+@@ -323,9 +323,9 @@ fs_cvt_lj()
+ fs_cvt_ps()
+ {
+     driver="$GS_DRIVER_HI"
+-    test X$3 = X-n && driver="$GS_DRIVER_LO"
++    test "$3" = "-n" && driver="$GS_DRIVER_LO"
+ 
+-    cat $1 |
++    cat "$1" |
+ 	gs $driver -sOutputFile=$2%03d -dNOPAUSE -q -dSAFER -
+ }
+        
+@@ -340,10 +340,10 @@ fs_cvt_ascii()
+ # via Ghostscript:
+ 
+     driver="$GS_DRIVER_HI"
+-    test X$3 = X-n && driver="$GS_DRIVER_LO"
++    test "$3" = "-n" && driver="$GS_DRIVER_LO"
+ 
+     gs $driver -sOutputFile=$2%03d -dNOPAUSE \
+-			-- gslp.ps -fCourier-Bold10 -B $1
++			-- gslp.ps -fCourier-Bold10 -B "$1"
+ 
+ #####
+ # via hp2pbm:
+@@ -378,7 +378,7 @@ fs_cvt_ascii()
+ #
+ fs_cvt_dvi()
+ {
+-    if [ X$3 = X-n ]
++    if [ "$3" = "-n" ]
+     then 
+ 	driver="$GS_DRIVER_LO" ; dvipscfg="-P dfaxlo"
+     else
+@@ -388,7 +388,7 @@ fs_cvt_dvi()
+ # if you do not have the dfaxlo(w)/dfaxhigh dvips modes configured, 
+ # remove "$dvipscfg" from the dvips command line below [or configure them!]
+ 
+-    dvips $dvipscfg $1 -o \
++    dvips $dvipscfg "$1" -o \
+         !"gs $driver -sOutputFile=$2%03d -dNOPAUSE -dSAFER -q -"
+ 
+ # for those that only have the old "dvialw":
+@@ -413,10 +413,10 @@ fs_cvt_dvi()
+ fs_cvt_pdf()
+ {
+     driver="$GS_DRIVER_HI"
+-    test X$3 = X-n && driver="$GS_DRIVER_LO"
++    test "$3" = "-n" && driver="$GS_DRIVER_LO"
+     r=0;
+     if /usr/bin/which acroread >/dev/null 2>&1; then
+-       cat $1 |
++       cat "$1" |
+ 	  acroread -toPostScript |
+ 	  gs $driver -sOutputFile=$2%03d -dNOPAUSE -q -dSAFER -
+        r=$?;
+@@ -636,7 +636,7 @@ else
+     then
+ 	eval `$AWK "$awkpgm" $PRIVATE_PHONE_DIR`
+     fi
+-    if [ -z "$phone" -a -r $GLOBAL_PHONE_DIR ]
++    if [ -z "$phone" -a -r "$GLOBAL_PHONE_DIR" ]
+     then
+ 	eval `$AWK "$awkpgm" $GLOBAL_PHONE_DIR`
+     fi
+@@ -663,11 +663,11 @@ do
+     then
+ 	$echo "$0: invalid characters in file name '$file'!" >&2 ; exit 5
+     fi
+-    if [ ! -r $file -a x$file != x- ]
++    if [ ! -r "$file" -a "$file" != "-" ]
+     then
+ 	$echo "$0: cannot open '$file'!" >&2 ; exit 5
+     fi
+-    if [ ! -s $file -a x$file != x- ]
++    if [ ! -s "$file" -a "$file" != "-" ]
+     then
+ 	$echo "$0: input file '$file' is empty (0 bytes)!" >&2 ; exit 5
+     fi
+@@ -702,7 +702,7 @@ fi
+ #
+ spooldir=${TMP:-/tmp}/$new_seq.$$.`date +%S`
+ 
+-if ( umask 077 ; mkdir $spooldir ) ; then
++if ( umask 077 ; mkdir "$spooldir" ) ; then
+     $echo "spooling to $spooldir (->$new_seq)..."
+ else
+     $echo "ERROR: can't create work dir '$spooldir', giving up" >&2 ; exit 6
+@@ -719,16 +719,16 @@ do
+ #
+ # if filename is "-", use stdin
+ #
+-    if [ x$file = x- ]
++    if [ "$file" = "-" ]
+     then
+ 	file=`mktemp /tmp/faxspool.XXXXXX`
+-	if test -z $file
++	if test -z "$file"
+ 	then
+ 	    $echo "ERROR: can't create work file, giving up" >&2 ; exit 6
+ 	fi
+ 	trap "rm $file" 0
+ 	$echo "spooling $file (stdin)..."
+-        cat - >$file
++        cat - >"$file"
+     else
+ 	$echo "spooling $file..."
+     fi
+@@ -738,7 +738,7 @@ do
+ #
+ # try to determine file type by extention (won't work for print spooler!)
+ #
+-    case $file in
++    case "$file" in
+ 	*.g3)	format="g3" ;;
+ 	*.ps)	format="ps" ;;
+ 	*.pdf)	format="pdf" ;;
+@@ -844,7 +844,7 @@ do
+ 
+     $echo "$file is format: $format"
+ 
+-    target=$spooldir/i-$F_NO-
++    target="$spooldir/i-$F_NO-"
+ 
+     # get & use external filter command (if set)
+     filter=`$AWK '$1 == "FILTER" && $2 == "'"$format$normal_res"'" \
+@@ -859,7 +859,7 @@ do
+ 	case $format in
+ 	    ps | ascii | pbm | pgm | ppm |\
+ 	    g3 | dvi   | lj  | xwd | gif | tif | pdf) 
+-		    fs_cvt_$format $file $target $normal_res
++		    fs_cvt_$format "$file" "$target" "$normal_res"
+ 		    ;;    
+ 	    *) $echo "$0: no internal filter for format '$format!' found" >&2 
+                exit 8 ;;
+@@ -883,7 +883,7 @@ if [ ! -z "$copy_source" ] ; then
+     for file in $input_data
+     do
+ 	b=`basename $file`
+-	$FAXQ_HELPER input $new_seq .source-files/$b <$file
++	$FAXQ_HELPER input $new_seq .source-files/$b <"$file"
+     done
+ fi
+ 
+@@ -893,7 +893,7 @@ fi
+ # Now let's create the work file
+ #
+ 
+-job=$spooldir/JOB
++job="$spooldir/JOB"
+ 
+ #
+ # conversion complete. Post-process G3 files
+@@ -903,7 +903,7 @@ pages=`ls $spooldir | sed '/^\./d'`
+ #
+ # get list / number of pages
+ #
+-cd $spooldir
++cd "$spooldir"
+ 
+ nr=0
+ maxnr=`echo $pages | wc -w | tr -d " "`
+@@ -968,13 +968,13 @@ do
+ 			      -e "s;@S@;$new_seq;g" \
+ 			      -e "s;@DATE[^@]*@;$DATE_OUT;g" \
+ 	| pbmtext -font $hdrfont | pbm2g3 \
+-	| g3cat - $f | \
++	| g3cat - "$f" | \
+ 	$FAXQ_HELPER input $new_seq f$nr.g3 \
+-	&& rm $f
++	&& rm "$f"
+     else
+-	g3cat $f | \
++	g3cat "$f" | \
+ 	$FAXQ_HELPER input $new_seq f$nr.g3 \
+-	&& rm $f
++	&& rm "$f"
+     fi
+     finalpg="$finalpg f$nr.g3"
+ done
+@@ -982,8 +982,8 @@ done
+ if [ -z "$finalpg" -a -z "$poll_req" ]
+ then
+     $echo "\nnothing to do (no cover page, no data)." >&2
+-    cd $FAX_SPOOL_OUT
+-    rmdir $spooldir
++    cd "$FAX_SPOOL_OUT"
++    rmdir "$spooldir"
+     exit 52
+ fi
+ 
+@@ -1022,9 +1022,9 @@ $echo "pages " $finalpg >>$job.q
+ $FAXQ_HELPER activate $new_seq < $job.q || exit 99
+ 
+ # clean up
+-rm $job.q
++rm "$job.q"
+ cd ..
+-rmdir $spooldir
++rmdir "$spooldir"
+ 
+ if [ -z "`find $LAST_RUN -ctime -1 -print 2>/dev/null`" ]
+ then
