@@ -1,4 +1,5 @@
 %define SENDFAX_UID 78
+%define ltstgt 20211229
 
 # PIE is broken on s390 (#868839, #872148)
 %ifnarch s390 s390x
@@ -8,8 +9,8 @@
 Summary:	A getty replacement for use with data and fax modems
 Name:		mgetty
 Version:	1.2.1
-Release:	1
-Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.2/mgetty-%{version}.tar.gz
+Release:	1.%{lstgt}.0
+Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.2/mgetty-%{version}.tar.xz
 Source2:	logrotate.mgetty
 Source3:	logrotate.sendfax
 Source4:	logrotate.vgetty
@@ -23,7 +24,7 @@ Patch2: mgetty-1.2.1-system-gsm.patch
 Patch4: mgetty-1.1.25-voiceconfig.patch
 Patch5: mgetty-1.2.1-issue.patch
 Patch6: mgetty-1.1.31-issue-doc.patch
-Patch7: mgetty-1.1.29-helper.patch
+Patch7: mgetty-1.2.1-helper.patch
 Patch8: mgetty-1.2.1-mktemp.patch
 Patch9: mgetty-1.2.1-unioninit.patch
 Patch11: mgetty-1.2.1-helper2.patch
@@ -111,7 +112,7 @@ Viewfax is capable of zooming in and out on the displayed fax.
 
 %prep
 %setup -q
-mv policy.h-dist policy.h
+#mv policy.h-dist policy.h
 %patch0 -p1 -b .config
 %patch1 -p1 -b .policy
 %patch2 -p1 -b .system-gsm
@@ -135,7 +136,7 @@ rm -r voice/libmgsm
 %patch23 -p1 -b .handle_spaces
 %patch24 -p1 -b .man
 %patch25 -p1 -b .sd
-%patch26 -p1 -b .makefile
+#%patch26 -p1 -b .makefile
 %patch27 -p1 -b .lockdev
 %patch28 -p1 -b .hardening
 
@@ -282,6 +283,7 @@ exit 0
 %{_mandir}/man8/faxq-helper.8*
 %{_mandir}/man8/faxrunqd.8*
 %{_mandir}/man8/sendfax.8*
+%{_infodir}/mgetty.info.zst
 %dir %{_sysconfdir}/mgetty+sendfax
 %config(noreplace) %{_sysconfdir}/mgetty+sendfax/sendfax.config
 %config(noreplace) %{_sysconfdir}/mgetty+sendfax/faxrunq.config

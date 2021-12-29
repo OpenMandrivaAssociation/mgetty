@@ -1,72 +1,86 @@
 diff --git a/Makefile b/Makefile
-index c395721..2c61dff 100644
+index c8ed7c8..4acb69b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -109,7 +109,7 @@ HOSTCC=$(CC)
  #	    USTAT	  - ustat(), no statfs etc.
  #
  #CFLAGS=-Wall -O2 -pipe -DSECUREWARE -DUSE_POLL
--CFLAGS=-Wall -O2 -pipe
-+CFLAGS=-Wall -O2 -pipe -fPIE
+-CFLAGS=-Wall -O2 -pipe $(RPM_OPT_FLAGS)
++CFLAGS=-Wall -O2 -pipe -fpie
  #CFLAGS=-O -DSVR4
  #CFLAGS=-O -DSVR4 -DSVR42
  #CFLAGS=-O -DUSE_POLL
-@@ -150,7 +150,7 @@ CFLAGS=-Wall -O2 -pipe
+@@ -150,7 +150,7 @@ CFLAGS=-Wall -O2 -pipe $(RPM_OPT_FLAGS)
  # 	"utmp.o: unresolved symbol _login"
  # For Linux, add "-lutil" if the linker complains about "updwtmp".
  #
--LDFLAGS=
-+LDFLAGS=-z now -pie
+-LDFLAGS=$(RPM_LD_FLAGS)
++LDFLAGS=-z now -pie 
  #LIBS=
  #LIBS=-lprot -lsocket				# SCO Unix
  #LIBS=-lsocket
-@@ -568,7 +568,7 @@ sendfax.config: sendfax.cfg.in sedscript
- 	./sedscript <sendfax.cfg.in >sendfax.config
- 
- newslock: compat/newslock.c
--	$(CC) $(CFLAGS) -o newslock compat/newslock.c
-+	$(CC) $(CFLAGS) $(LDFLAGS) -o newslock compat/newslock.c
- 
- # internal: use this to create a "clean" mgetty+sendfax tree
- bindist: all doc-all sedscript
-diff --git a/fax/Makefile b/fax/Makefile
-index 89ceccb..7796e8d 100644
---- a/fax/Makefile
-+++ b/fax/Makefile
-@@ -5,7 +5,8 @@
+@@ -618,20 +618,19 @@ install.bin: mgetty sendfax newslock \
+ 	test -d $(CONFDIR) || \
+ 		( ./mkidirs $(CONFDIR) && chmod 755 $(CONFDIR))
+ 	test -f $(CONFDIR)/login.config || \
+-		( $(INSTALL) -m 600 login.config $(CONFDIR)/ && \
+-		  $(CHOWN) root $(CONFDIR)/login.config )
++		( $(INSTALL) -m 600 login.config $(CONFDIR) )
+ 	test -f $(CONFDIR)/mgetty.config || \
+-		( $(INSTALL) -m 600 mgetty.config $(CONFDIR)/ && \
+-		  $(CHOWN) root $(CONFDIR)/mgetty.config )
++		( $(INSTALL) -m 600 mgetty.config $(CONFDIR) ) 
++#		  $(CHOWN) root $(CONFDIR)/mgetty.config )
+ 	test -f $(CONFDIR)/sendfax.config || \
+-		( $(INSTALL) -m 644 sendfax.config $(CONFDIR)/ && \
+-		  $(CHOWN) root $(CONFDIR)/sendfax.config )
++		( $(INSTALL) -m 644 sendfax.config $(CONFDIR) )
++#		  $(CHOWN) root $(CONFDIR)/sendfax.config )
+ 	test -f $(CONFDIR)/dialin.config || \
+-		( $(INSTALL) -m 600 dialin.config $(CONFDIR)/ && \
+-		  $(CHOWN) root $(CONFDIR)/dialin.config )
++		( $(INSTALL) -m 600 dialin.config $(CONFDIR) )
++#		  $(CHOWN) root $(CONFDIR)/dialin.config )
+ 	test -f $(CONFDIR)/faxrunq.config || \
+-		( $(INSTALL) -m 644 faxrunq.config $(CONFDIR)/ && \
+-		  $(CHOWN) root $(CONFDIR)/faxrunq.config )
++		( $(INSTALL) -m 644 faxrunq.config $(CONFDIR) )
++#		  $(CHOWN) root $(CONFDIR)/faxrunq.config )
  #
+ # test for outdated stuff
+ #
+diff --git a/callback/Makefile b/callback/Makefile
+index 236fe34..ec708ae 100644
+--- a/callback/Makefile
++++ b/callback/Makefile
+@@ -37,9 +37,9 @@ clean:
+ # install programs
+ #
+ install: all
+-	$(INSTALL_S) -m 700 callback $(SBINDIR)
++	$(INSTALL_S) -m 700 -o root callback $(SBINDIR)
+ 	$(CHOWN) root $(SBINDIR)/callback
+-	$(INSTALL_S) -m 4711 ct $(BINDIR)
++	$(INSTALL_S) -m 4711 -o root ct $(BINDIR)
+ 	$(CHOWN) root $(BINDIR)/ct
  
- CC=gcc
--CFLAGS=-O2 -I.. -Wall
-+CFLAGS=-O2 -I.. -Wall -fPIE
-+LDFLAGS=-z now -pie
- 
- FAX_SCRIPTS=faxspool faxrunq faxq faxrm 
- 
-@@ -36,7 +37,7 @@ faxheader: faxheader.in ../sedscript
- 	@cd .. ; $(MAKE) sedscript
- 
- faxq-helper: faxq-helper.o 
--	$(CC) $(CFLAGS) -o faxq-helper faxq-helper.o
-+	$(CC) $(CFLAGS) $(LDFLAGS) -o faxq-helper faxq-helper.o
- 
- faxq-helper.o: faxq-helper.c ../sedscript
- 	$(CC) $(CFLAGS) -DFAX_SPOOL_OUT=\"$(FAX_SPOOL_OUT)\" \
+ # source modules
 diff --git a/frontends/X11/viewfax/Makefile b/frontends/X11/viewfax/Makefile
-index 9fa4fae..8b8b20f 100644
+index abe3b18..fb30f54 100644
 --- a/frontends/X11/viewfax/Makefile
 +++ b/frontends/X11/viewfax/Makefile
-@@ -37,20 +37,20 @@ OPT = -g -O2 -Wno-uninitialized -ansi -pedantic
- #LDFLAGS = $(OPT)
+@@ -38,20 +38,20 @@ OPT = -g -O2 -Wno-uninitialized -ansi -pedantic
+ #LDFLAGS = $(OPT) $(RPM_LD_FLAGS)
  #LIBS = -lsocket
  # vanilla BSD
 -CC = cc
--CFLAGS = -DBSD $(OPT) -DHELPFILE=$(HELP) -I/usr/local/include
--LDFLAGS = $(OPT)
+-CFLAGS = -DBSD $(OPT) $(RPM_OPT_FLAGS) -DHELPFILE=$(HELP) -I/usr/local/include
+-LDFLAGS = $(OPT) $(RPM_LD_FLAGS)
 -LIBS =
 +#CC = cc
-+#CFLAGS = -DBSD $(OPT) -DHELPFILE=$(HELP) -I/usr/local/include
-+#LDFLAGS = $(OPT)
++#CFLAGS = -DBSD $(OPT) $(RPM_OPT_FLAGS) -DHELPFILE=$(HELP) -I/usr/local/include
++#LDFLAGS = $(OPT) $(RPM_LD_FLAGS)
 +#LIBS =
  # sun solaris2 with gcc on supersparc:
  #CC = gcc
@@ -75,12 +89,12 @@ index 9fa4fae..8b8b20f 100644
  #LIBS =
  # linux
 -#CC = gcc
--#CFLAGS = $(OPT) -DHELPFILE=$(HELP)
--#LDFLAGS = $(OPT) -L/usr/X11R6/lib
+-#CFLAGS = $(OPT) $(RPM_OPT_FLAGS) -DHELPFILE=$(HELP)
+-#LDFLAGS = $(OPT) $(RPM_LD_FLAGS) -L/usr/X11R6/lib
 -#LIBS =
 +CC = gcc
-+CFLAGS = $(OPT) -DHELPFILE=$(HELP) -fPIE
-+LDFLAGS = $(OPT) -z now -pie -L/usr/X11R6/lib
++CFLAGS = $(OPT) $(RPM_OPT_FLAGS) -DHELPFILE=$(HELP)
++LDFLAGS = $(OPT) $(RPM_LD_FLAGS) -L/usr/X11R6/lib
 +LIBS =
  
  ####### End of configurable definitions #######
