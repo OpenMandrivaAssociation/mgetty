@@ -1,0 +1,13 @@
+diff --git a/fax/Makefile b/fax/Makefile
+index 2272f6f..158762e 100644
+--- a/fax/Makefile
++++ b/fax/Makefile
+@@ -58,7 +58,7 @@ install: all
+ 	done
+ 	$(INSTALL) -m 755 faxrunqd $(SBINDIR)
+ 	$(INSTALL) faxq-helper $(LIBDIR)
+-	$(CHOWN) $(FAX_OUT_USER) $(LIBDIR)/faxq-helper
++	$(CHOWN) $(FAX_OUT_USER) $(LIBDIR)/faxq-helper || :
+ 	chmod 4711 $(LIBDIR)/faxq-helper
+ #
+ # data files
