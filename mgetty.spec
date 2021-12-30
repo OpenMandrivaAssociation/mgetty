@@ -65,13 +65,14 @@ URL: http://mgetty.greenie.net/
 Summary: Provides support for sending faxes over a modem
 Requires: mgetty = %{version}
 Requires: coreutils
-Requires: netpbm-progs
+Requires: netpbm
 Requires(pre): /usr/sbin/useradd
 Conflicts: hylafax+
 
 %package voice
 Summary: A program for using your modem and mgetty as an answering machine
 Requires: mgetty = %{version}
+Requires: sendmail
 Requires(post): systemd
 Requires(postun): systemd
 
