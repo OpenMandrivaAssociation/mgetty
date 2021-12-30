@@ -56,7 +56,9 @@ BuildRequires:	pkgconfig(xext)
 BuildRequires:	pkgconfig(lockdev)
 BuildRequires:	texinfo
 
-Requires: coreutils, /usr/sbin/sendmail, uucp
+Requires:	coreutils, 
+Requires:	sendmail
+Requires:	uucp
 Requires(post): systemd
 Requires(postun): systemd
 URL: http://mgetty.greenie.net/
