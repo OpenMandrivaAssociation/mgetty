@@ -9,7 +9,7 @@
 Summary:	A getty replacement for use with data and fax modems
 Name:		mgetty
 Version:	1.2.1
-Release:	1.%{lstgt}.0
+Release:	1.%{ltstgt}.0
 Source0:	ftp://mgetty.greenie.net/pub/mgetty/source/1.2/mgetty-%{version}.tar.xz
 Source2:	logrotate.mgetty
 Source3:	logrotate.sendfax
