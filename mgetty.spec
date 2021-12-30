@@ -54,6 +54,8 @@ Buildrequires:	gsm-devel
 BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xext)
 BuildRequires:	pkgconfig(lockdev)
+BuildRequires:	texinfo
+
 Requires: coreutils, /usr/sbin/sendmail, uucp
 Requires(post): systemd
 Requires(postun): systemd
