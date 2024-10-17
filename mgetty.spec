@@ -61,7 +61,7 @@ Requires:	sendmail
 Requires:	uucp
 Requires(post): systemd
 Requires(postun): systemd
-URL: http://mgetty.greenie.net/
+URL: https://mgetty.greenie.net/
 
 %package sendfax
 Summary: Provides support for sending faxes over a modem
